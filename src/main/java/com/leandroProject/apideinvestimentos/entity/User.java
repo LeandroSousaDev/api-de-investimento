@@ -1,11 +1,12 @@
 package com.leandroProject.apideinvestimentos.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,7 +16,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
+     private UUID userId;
 
     private String userName;
 
@@ -29,8 +30,8 @@ public class User {
     @UpdateTimestamp
     private Instant UpdatedAt;
 
-    public User() {
-    }
+    @OneToMany(mappedBy = "user")
+    private List<Account> accounts;
 
     public User(UUID userId, String userName, String email, String password, Instant createdAt, Instant updatedAt) {
         this.userId = userId;
@@ -40,4 +41,5 @@ public class User {
         this.createdAt = createdAt;
         UpdatedAt = updatedAt;
     }
+
 }
