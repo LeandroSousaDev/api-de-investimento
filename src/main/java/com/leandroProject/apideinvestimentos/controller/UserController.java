@@ -1,5 +1,8 @@
 package com.leandroProject.apideinvestimentos.controller;
 
+import com.leandroProject.apideinvestimentos.controller.DTO.CreateAccountDto;
+import com.leandroProject.apideinvestimentos.controller.DTO.CreateUserDTO;
+import com.leandroProject.apideinvestimentos.controller.DTO.UpdateUserDTO;
 import com.leandroProject.apideinvestimentos.entity.User;
 import com.leandroProject.apideinvestimentos.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +15,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -53,4 +56,15 @@ public class UserController {
         this.userService.deleteById(userId);
         return ResponseEntity.noContent().build();
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    @PostMapping("/{userId}/accounts")
+    public ResponseEntity<Void> accountUser(@PathVariable("userId") String userId,
+                                            @RequestBody CreateAccountDto createAccountDto) {
+        userService.createAccount(userId, createAccountDto);
+        return ResponseEntity.ok().build();
+    }
+
 }

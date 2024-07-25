@@ -1,12 +1,20 @@
 package com.leandroProject.apideinvestimentos.service;
 
-import com.leandroProject.apideinvestimentos.controller.CreateUserDTO;
-import com.leandroProject.apideinvestimentos.controller.UpdateUserDTO;
+import com.leandroProject.apideinvestimentos.controller.DTO.CreateAccountDto;
+import com.leandroProject.apideinvestimentos.controller.DTO.CreateUserDTO;
+import com.leandroProject.apideinvestimentos.controller.DTO.UpdateUserDTO;
+import com.leandroProject.apideinvestimentos.entity.Account;
+import com.leandroProject.apideinvestimentos.entity.BillingAddress;
 import com.leandroProject.apideinvestimentos.entity.User;
+import com.leandroProject.apideinvestimentos.repository.AccountRepository;
+import com.leandroProject.apideinvestimentos.repository.BillingAddressRepository;
 import com.leandroProject.apideinvestimentos.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,9 +23,15 @@ import java.util.UUID;
 public class UserService {
 
     private UserRepository userRepository;
+    private AccountRepository accountRepository;
+    private BillingAddressRepository billingAddressRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       AccountRepository accountRepository,
+                       BillingAddressRepository billingAddressRepository) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
+        this.billingAddressRepository = billingAddressRepository;
     }
 
     public UUID createUser(CreateUserDTO createUserDTO) {
@@ -66,6 +80,33 @@ public class UserService {
 
             this.userRepository.save(user);
         }
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void createAccount(String userId, CreateAccountDto createAccountDto) {
+      var user = this.userRepository.findById(UUID.fromString(userId))
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "usuario não exixste"));
+
+      var account = new Account(
+              UUID.randomUUID(),
+              createAccountDto.description(),
+              user,
+              null,
+              new ArrayList<>()
+      );
+
+      var accountCreated = accountRepository.save(account);
+
+      var billingAddress = new BillingAddress(
+              accountCreated.getAccountId(),
+              createAccountDto.street(),
+              createAccountDto.number(),
+              account
+      );
+
+      this.billingAddressRepository.save(billingAddress);
 
     }
 }

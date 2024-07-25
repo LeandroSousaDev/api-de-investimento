@@ -1,7 +1,6 @@
 package com.leandroProject.apideinvestimentos.entity;
 
 import jakarta.persistence.Embeddable;
-import jdk.jfr.Enabled;
 import lombok.Data;
 
 import java.util.UUID;
