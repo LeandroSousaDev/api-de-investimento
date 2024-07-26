@@ -1,5 +1,6 @@
 package com.leandroProject.apideinvestimentos.service;
 
+import com.leandroProject.apideinvestimentos.controller.DTO.AccountStockResponseDto;
 import com.leandroProject.apideinvestimentos.controller.DTO.AssociateAccountStockDto;
 import com.leandroProject.apideinvestimentos.entity.AccountStock;
 import com.leandroProject.apideinvestimentos.entity.AccountStockId;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,5 +45,15 @@ public class AccountsService {
         );
 
         accountStockRepository.save(entity);
+    }
+
+    public List<AccountStockResponseDto> listStocks(String accoundId) {
+        var account = accountRepository.findById(UUID.fromString(accoundId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return account.getAccountStocks()
+                .stream()
+                .map(as -> new AccountStockResponseDto(as.getStock().getStockId(), as.getQuantity(), 0.0))
+                .toList();
     }
 }
