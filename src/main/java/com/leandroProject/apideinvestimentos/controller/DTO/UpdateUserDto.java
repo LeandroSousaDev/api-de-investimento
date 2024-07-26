@@ -1,4 +1,4 @@
 package com.leandroProject.apideinvestimentos.controller.DTO;
 
-public record UpdateUserDTO(String username, String password) {
+public record UpdateUserDto(String username, String password) {
 }

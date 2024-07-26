@@ -1,8 +1,9 @@
 package com.leandroProject.apideinvestimentos.service;
 
+import com.leandroProject.apideinvestimentos.controller.DTO.AccountResponseDto;
 import com.leandroProject.apideinvestimentos.controller.DTO.CreateAccountDto;
-import com.leandroProject.apideinvestimentos.controller.DTO.CreateUserDTO;
-import com.leandroProject.apideinvestimentos.controller.DTO.UpdateUserDTO;
+import com.leandroProject.apideinvestimentos.controller.DTO.CreateUserDto;
+import com.leandroProject.apideinvestimentos.controller.DTO.UpdateUserDto;
 import com.leandroProject.apideinvestimentos.entity.Account;
 import com.leandroProject.apideinvestimentos.entity.BillingAddress;
 import com.leandroProject.apideinvestimentos.entity.User;
@@ -34,7 +35,7 @@ public class UserService {
         this.billingAddressRepository = billingAddressRepository;
     }
 
-    public UUID createUser(CreateUserDTO createUserDTO) {
+    public UUID createUser(CreateUserDto createUserDTO) {
        var entity = new User(UUID.randomUUID(),
                 createUserDTO.username(),
                 createUserDTO.email(),
@@ -64,7 +65,7 @@ public class UserService {
         }
     }
 
-    public void updateById(String userId, UpdateUserDTO updateUserDTO) {
+    public void updateById(String userId, UpdateUserDto updateUserDTO) {
         var id = UUID.fromString(userId);
         var userEntity = this.userRepository.findById(id);
 
@@ -108,5 +109,15 @@ public class UserService {
 
       this.billingAddressRepository.save(billingAddress);
 
+    }
+
+    public List<AccountResponseDto> listAccounts(String userId) {
+        var user = this.userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "usuario não exixste"));
+
+        return user.getAccounts()
+                .stream()
+                .map(ac -> new AccountResponseDto(ac.getAccountId().toString(), ac.getDescription()))
+                .toList();
     }
 }
